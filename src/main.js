@@ -140,6 +140,7 @@ export default class StepZilla extends Component {
       let passThroughStepsNotValid = false; // if we are jumping forward, only allow that if inbetween steps are all validated. This flag informs the logic...
       let proceed = false; // flag on if we should move on
 
+      
       this.abstractStepMoveAllowedToPromise(movingBack)
         .then((valid = true) => { // validation was a success (promise or sync validation). In it was a Promise's resolve() then proceed will be undefined, so make it true. Or else 'proceed' will carry the true/false value from sync v
           proceed = valid;
@@ -246,6 +247,9 @@ export default class StepZilla extends Component {
         // so use hocValidationAppliedTo to determine if this step needs the aync validation as per react-validation-mixin interface
         proceed = this.refs.activeComponent.refs.component.isValidated();
       }
+      else if(typeof this.props.steps[this.state.compState].component.type.prototype.isValidated !== 'undefined') {
+          proceed = this.props.steps[this.state.compState].component.type.prototype.isValidated();
+      }
       else if (Object.keys(this.refs).length == 0 || typeof this.refs.activeComponent.isValidated == 'undefined') {
         // if its a form component, it should have implemeted a public isValidated class (also pure componenets wont even have refs - i.e. a empty object). If not then continue
         proceed = true;
@@ -323,7 +327,7 @@ export default class StepZilla extends Component {
 
           {compToRender}
         <div style={this.props.showNavigation ? {} : this.hidden} className="footer-buttons">
-          <button
+          <button type='button'
             style={this.state.showPreviousBtn ? {} : this.hidden}
             className={props.backButtonCls}
             onClick={() => {this.previous()}}
@@ -331,7 +335,7 @@ export default class StepZilla extends Component {
           >
             {this.props.backButtonText}
           </button>
-          <button
+          <button type='button'
             style={this.state.showNextBtn ? {} : this.hidden}
             className={props.nextButtonCls}
             onClick={() => {this.next()}}
