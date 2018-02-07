@@ -122,6 +122,7 @@ export default class StepZilla extends Component {
 
   // this utility method lets Child components invoke a direct jump to another step
   jumpToStep(evt) {
+    this.props.beforeStepChange(this.state.compState);
     if (evt.target == undefined) {
       // a child step wants to invoke a jump between steps. in this case 'evt' is the numeric step number and not the JS event
       this.setNavState(evt);
@@ -195,6 +196,7 @@ export default class StepZilla extends Component {
 
   // move next via next button
   next() {
+    this.props.beforeStepChange(this.state.compState);
     this.abstractStepMoveAllowedToPromise()
       .then((proceed = true) => {
         // validation was a success (promise or sync validation). In it was a Promise's resolve() then proceed will be undefined, so make it true. Or else 'proceed' will carry the true/false value from sync validation
@@ -220,6 +222,7 @@ export default class StepZilla extends Component {
 
   // move behind via previous button
   previous() {
+    this.props.beforeStepChange(this.state.compState);
     if (this.state.compState > 0) {
       this.setNavState(this.state.compState - 1);
     }
@@ -247,9 +250,10 @@ export default class StepZilla extends Component {
         // so use hocValidationAppliedTo to determine if this step needs the aync validation as per react-validation-mixin interface
         proceed = this.refs.activeComponent.refs.component.isValidated();
       }
-      else if(typeof this.props.steps[this.state.compState].component.type.prototype.isValidated !== 'undefined') {
-          proceed = this.props.steps[this.state.compState].component.type.prototype.isValidated();
-      }
+      // else if(typeof this.props.steps[this.state.compState].component.type.prototype.isValidated !== 'undefined') {
+      //   //  look for isValidate function for each step
+      //     proceed = this.props.steps[this.state.compState].component.type.prototype.isValidated();
+      // }
       else if (Object.keys(this.refs).length == 0 || typeof this.refs.activeComponent.isValidated == 'undefined') {
         // if its a form component, it should have implemeted a public isValidated class (also pure componenets wont even have refs - i.e. a empty object). If not then continue
         proceed = true;
@@ -381,5 +385,6 @@ StepZilla.propTypes = {
   backButtonCls: PropTypes.string,
   backButtonText: PropTypes.string,
   hocValidationAppliedTo: PropTypes.array,
-  onStepChange: PropTypes.func
+  onStepChange: PropTypes.func,
+  beforeStepChange: PropTypes.func,
 }

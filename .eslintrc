@@ -14,3 +14,4 @@ rules:
   comma-dangle: [2, "never"]
   no-console: 0
   max-len: [2, 200]
+  linebreak-style :["error","windows"]
